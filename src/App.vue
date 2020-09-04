@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-container>
+      <create-btn/>
       <v-row class="fill-height">
         <v-col>
           <v-sheet height="64">
@@ -33,6 +34,9 @@
                   </v-list-item>
                   <v-list-item @click="type = '4day'">
                     <v-list-item-title>4 days</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="type = '2day'">
+                    <v-list-item-title>2 days</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -87,9 +91,11 @@
 </template>
 
 <script>
+import CreateBtn from "./components/CreateBtn";
+
 export default {
   name: "App",
-  components: {},
+  components: {CreateBtn},
   data: () => ({
     focus: "",
     type: "month",
@@ -98,6 +104,7 @@ export default {
       week: "Week",
       day: "Day",
       "4day": "4 Days",
+      "2day": "2 Days",
     },
     selectedEvent: {},
     selectedElement: null,
