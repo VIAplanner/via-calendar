@@ -168,7 +168,7 @@ export default {
     },
     updateRange({ start, end }) {
       const events = [];
-
+      console.log(start,end)
       const min = new Date(`${start.date}T00:00:00`);
       const max = new Date(`${end.date}T23:59:59`);
       const days = (max.getTime() - min.getTime()) / 86400000;
@@ -180,7 +180,6 @@ export default {
         const first = new Date(firstTimestamp - (firstTimestamp % 900000));
         const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000;
         const second = new Date(first.getTime() + secondTimestamp);
-
         events.push({
           name: this.names[this.rnd(0, this.names.length - 1)],
           start: first,

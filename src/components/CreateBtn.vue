@@ -2,8 +2,8 @@
   <v-dialog v-model="dialog" width="400px">
     <template v-slot:activator="{ on }">
       <v-btn outlined color="green" v-on="on">
-        <v-icon>mdi-plus</v-icon>
-        <span>Create</span>
+        <v-icon left>mdi-plus</v-icon>
+        Create
       </v-btn>
     </template>
     <v-card>
@@ -29,8 +29,8 @@
                 :counter="100"
                 label="Event description"
                 outlined
+                clearable
             ></v-textarea>
-            <div style="height: 10px"/>
             <v-menu
                 ref="datePicker"
                 v-model="datePicker"
@@ -65,6 +65,85 @@
                 >
                 </v-date-picker>
             </v-menu>
+            <!-- <div style="height: 20px"/> -->
+            <!-- <v-divider/> -->
+            <!-- <v-subheader>
+                Optional
+            </v-subheader> -->
+            <v-checkbox
+                v-model="timed"
+                label="Timed"
+            ></v-checkbox>
+            <v-row>
+                <v-col cols="2">
+                    <v-subheader> From </v-subheader>
+                </v-col>
+                <v-col>
+                    <v-select
+                        :disabled="!timed"
+                        outlined
+                        dense
+                        v-model="startHour"
+                        hint="Hour"
+                        persistent-hint
+                        :items="hours">
+                    </v-select>
+                </v-col>
+                <v-col>
+                    <v-text-field 
+                        :disabled="!timed"
+                        outlined
+                        dense
+                        hint="Min"
+                        persistent-hint
+                        v-model="startMin">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-select
+                        :disabled="!timed"
+                        outlined
+                        dense
+                        v-model="startAMPM"
+                        :items="['AM', 'PM']">
+                    </v-select>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="2">
+                    <v-subheader> To </v-subheader>
+                </v-col>
+                <v-col>
+                    <v-select
+                        :disabled="!timed"
+                        outlined
+                        dense
+                        v-model="endHour"
+                        hint="Hour"
+                        persistent-hint
+                        :items="hours">
+                    </v-select>
+                </v-col>
+                <v-col>
+                    <v-text-field 
+                        :disabled="!timed"
+                        outlined
+                        dense
+                        hint="Min"
+                        persistent-hint
+                        v-model="endMin">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-select
+                        :disabled="!timed"
+                        outlined
+                        dense
+                        v-model="endAMPM"
+                        :items="['AM', 'PM']">
+                    </v-select>
+                </v-col>
+            </v-row>
         </v-form>
         <v-card-actions>
             <v-spacer/>
@@ -92,16 +171,31 @@ export default {
         return {
         valid: false,
         dialog: false,
-        date: undefined,
+
         eventName: "",
-        description: "",
         nameErrorMsg: "",
+
+        description: "",
+        date: undefined,
         dateErrorMsg: "",
+
         datePicker: false,
+
+        timed: true,
+
+        startHour: [],
+        startMin: "",
+        startAMPM: "AM",
+
+        endHour: [],
+        endMin: "",
+        endAMPM: "AM",
+        hours: [1,2,3,4,5,6,7,8,9,10,11,12],
+
         eventRules: [
             (v) => v.length <= 10 || "Name must be less than 10 characters",
         ],
-        createDialog: false,
+
         };
     },
     methods: {
@@ -126,10 +220,20 @@ export default {
             this.description = ""
             this.nameErrorMsg = ""
             this.dateErrorMsg = ""
+            this.timed = true
+            this.startHour = [],
+            this.startMin = "",
+            this.startAMPM = "AM",
+            this.endHour = [],
+            this.endMin = "",
+            this.endAMPM = "AM"
         }
     }
 };
 </script>
 
 <style>
+    .col {
+        padding-bottom: 0px !important;
+    }
 </style>
