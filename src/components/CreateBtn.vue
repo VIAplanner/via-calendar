@@ -92,7 +92,8 @@
                         :disabled="!timed"
                         outlined
                         dense
-                       
+                        :error-messages="startMinErrorMsg"
+                        @click="startMinErrorMsg = ''"
                         persistent-hint
                         v-model="startMin">
                     </v-text-field>
@@ -130,7 +131,8 @@
                         :disabled="!timed"
                         outlined
                         dense
-                        
+                        :error-messages="endMinErrorMsg"
+                        @click="endMinErrorMsg = ''"
                         persistent-hint
                         v-model="endMin">
                     </v-text-field>
@@ -188,10 +190,12 @@ export default {
 
         startHour: [],
         startMin: "",
+        startMinErrorMsg: "",
         startAMPM: "AM",
 
         endHour: [],
         endMin: "",
+        endMinErrorMsg: "",
         endAMPM: "AM",
         hours: [1,2,3,4,5,6,7,8,9,10,11,12],
 
@@ -209,6 +213,7 @@ export default {
             } else if(ampm == "PM" && hour < 12){
                 return (hour+12).toString()
             }
+            return hour
         },
         modifyMin(min){
             if(parseInt(min) < 10){
@@ -226,7 +231,7 @@ export default {
                 this.dateErrorMsg = "A date is required"
                 flag = true
             }
-
+            this.validateTime()
             if (!flag) {
                 this.addEvent({
                     name: this.eventName,
@@ -237,6 +242,16 @@ export default {
                 })
                 console.log(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.modifyMin(this.startMin)+":00Z")
                 this.dialog = false
+            }
+        },
+        validateTime() {
+            if (isNaN(this.startMin) ||
+                parseInt(this.startMin) < 0 || parseInt(this.startMin) > 59) {
+                this.startMinErrorMsg = "Invalid time"
+            }
+            if (isNaN(this.endMin) ||
+                parseInt(this.endMin) < 0 || parseInt(this.endMin) > 59) {
+                this.endMinErrorMsg = "Invalid time"
             }
         },
         cancelNewEvent() {
