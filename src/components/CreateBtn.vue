@@ -18,7 +18,7 @@
             <v-text-field
                 v-model="eventName"
                 :rules="eventRules"
-                :counter="10"
+                :counter="40"
                 :error-messages="nameErrorMsg"
                 label="* Event name"
                 required
@@ -78,23 +78,26 @@
                 <v-col cols="2">
                     <v-subheader> From </v-subheader>
                 </v-col>
+                <!-- hint="Hour" -->
                 <v-col>
                     <v-select
                         :disabled="!timed"
                         outlined
                         dense
                         v-model="startHour"
-                        hint="Hour"
+                        
                         persistent-hint
                         :items="hours">
                     </v-select>
                 </v-col>
+                <h2 class = "separator"> :</h2>
+                 <!-- hint="Min" -->
                 <v-col>
                     <v-text-field 
                         :disabled="!timed"
                         outlined
                         dense
-                        hint="Min"
+                       
                         persistent-hint
                         v-model="startMin">
                     </v-text-field>
@@ -113,23 +116,26 @@
                 <v-col cols="2">
                     <v-subheader> To </v-subheader>
                 </v-col>
+                <!-- hint="Hour" -->
                 <v-col>
                     <v-select
                         :disabled="!timed"
                         outlined
                         dense
                         v-model="endHour"
-                        hint="Hour"
+                        
                         persistent-hint
                         :items="hours">
                     </v-select>
                 </v-col>
+                <!-- hint="Min" -->
+                <h2 class = "separator"> :</h2>
                 <v-col>
                     <v-text-field 
                         :disabled="!timed"
                         outlined
                         dense
-                        hint="Min"
+                        
                         persistent-hint
                         v-model="endMin">
                     </v-text-field>
@@ -166,6 +172,8 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
     data() {
         return {
@@ -193,12 +201,16 @@ export default {
         hours: [1,2,3,4,5,6,7,8,9,10,11,12],
 
         eventRules: [
-            (v) => v.length <= 10 || "Name must be less than 10 characters",
+            (v) => v.length <= 40 || "Name must be less than 40 characters",
         ],
 
         };
     },
     methods: {
+        ...mapMutations(["addEvent"]),
+        replaceDate(){
+            return this.date.replace("/","-")
+        },
         saveNewEvent() {
             var flag = false
             if(this.eventName.length === 0) {
@@ -210,6 +222,15 @@ export default {
                 flag = true
             }
             if (!flag) {
+                this.addEvent({
+                    name: this.eventName,
+                    start: new Date(this.replaceDate()+"T"+this.startHour+":"+this.startMin+":00Z"),
+                    end: new Date(this.replaceDate()+"T"+this.endHour+":"+this.endMin+":00Z"),
+                    color: "blue",
+                    timed: false
+                })
+                var temp = new Date(this.replaceDate()+"T"+this.startHour+":"+this.startMin+":00Z")
+                console.log(temp.getFullYear())
                 this.dialog = false
             }
         },
@@ -235,5 +256,8 @@ export default {
 <style>
     .col {
         padding-bottom: 0px !important;
+    }
+    .separator{
+        margin-top:10px;
     }
 </style>
