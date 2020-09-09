@@ -222,12 +222,12 @@ export default {
             }
              
         },
-        // modifyMin(min){
-        //     if(parseInt(min) < 10){
-        //         return "0"+ min
-        //     } 
-        //     return min
-        // },
+        modifyMin(min){
+            if(parseInt(min) < 10){
+                return "0"+ min
+            } 
+            return min
+        },
         saveNewEvent() {
             if (this.startMin.length == 0) {
                 this.startMin = "0"
@@ -244,12 +244,18 @@ export default {
                 this.dateErrorMsg = "A date is required"
                 flag = true
             }
-            this.validateTime()
+            if (!this.validateTime()) {
+                flag = true
+            }
             if (!flag) {
                 this.addEvent({
                     name: this.eventName,
-                    start: new Date(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.startMin+":00"),
-                    end: new Date(this.date+"T"+this.modifyHour(this.endHour,this.endAMPM)+":"+this.endMin+":00"),
+                    start: new Date(this.date+
+                        "T"+this.modifyHour(this.startHour,this.startAMPM)+
+                        ":"+this.modifyMin(this.startMin)+":00"),
+                    end: new Date(this.date+"T"+
+                        this.modifyHour(this.endHour,this.endAMPM)+
+                        ":"+this.modifyMin(this.endMin)+":00"),
                     color: "blue",
                     timed: this.timed
                 })
@@ -260,25 +266,31 @@ export default {
             if (isNaN(this.startMin) ||
                 parseInt(this.startMin) < 0 || parseInt(this.startMin) > 59) {
                 this.startMinErrorMsg = "Invalid"
+                return false
             }
             if (isNaN(this.endMin) ||
                 parseInt(this.endMin) < 0 || parseInt(this.endMin) > 59) {
                 this.endMinErrorMsg = "Invalid"
+                return false
             }
             if (this.startAMPM === "PM" && this.endAMPM === "AM") {
                 this.endAMPMErrorMsg = "Invalid"
+                return false
             }
             else if (this.startAMPM === this.endAMPM) {
                 let startHr = this.startHour == "12" ? 0 : parseInt(this.startHour)
                 let endHr = this.endHour == "12" ? 0 : parseInt(this.endHour)
                 if (startHr > endHr) {
                     this.endHourErrorMsg = "Invalid"
+                    return false
                 }
                 else if (startHr == endHr && 
                     parseInt(this.startMin) >= parseInt(this.endMin)) {
                     this.endMinErrorMsg = "Invalid"
+                    return false
                 }
             }
+            return true
         },
         cancelNewEvent() {
             this.dialog = false
