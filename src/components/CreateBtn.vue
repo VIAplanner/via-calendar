@@ -65,11 +65,7 @@
                 >
                 </v-date-picker>
             </v-menu>
-            <!-- <div style="height: 20px"/> -->
-            <!-- <v-divider/> -->
-            <!-- <v-subheader>
-                Optional
-            </v-subheader> -->
+
             <v-checkbox
                 v-model="timed"
                 label="Timed"
@@ -78,7 +74,6 @@
                 <v-col cols="2">
                     <v-subheader> From </v-subheader>
                 </v-col>
-                <!-- hint="Hour" -->
                 <v-col>
                     <v-select
                         :disabled="!timed"
@@ -208,8 +203,18 @@ export default {
     },
     methods: {
         ...mapMutations(["addEvent"]),
-        replaceDate(){
-            return this.date.replace("/","-")
+        modifyHour(hour, ampm){
+            if(ampm == "AM" && hour < 10){
+                return "0"+ hour.toString()
+            } else if(ampm == "PM" && hour < 12){
+                return (hour+12).toString()
+            }
+        },
+        modifyMin(min){
+            if(parseInt(min) < 10){
+                return "0"+ min
+            } 
+            return min
         },
         saveNewEvent() {
             var flag = false
@@ -221,16 +226,16 @@ export default {
                 this.dateErrorMsg = "A date is required"
                 flag = true
             }
+
             if (!flag) {
                 this.addEvent({
                     name: this.eventName,
-                    start: new Date(this.replaceDate()+"T"+this.startHour+":"+this.startMin+":00Z"),
-                    end: new Date(this.replaceDate()+"T"+this.endHour+":"+this.endMin+":00Z"),
+                    start: new Date(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.modifyMin(this.startMin)+":00Z"),
+                    end: new Date(this.date+"T"+this.modifyHour(this.endHour,this.endAMPM)+":"+this.modifyMin(this.endMin)+":00Z"),
                     color: "blue",
-                    timed: false
+                    timed: this.timed
                 })
-                var temp = new Date(this.replaceDate()+"T"+this.startHour+":"+this.startMin+":00Z")
-                console.log(temp.getFullYear())
+                console.log(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.modifyMin(this.startMin)+":00Z")
                 this.dialog = false
             }
         },
