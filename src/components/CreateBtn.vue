@@ -119,7 +119,8 @@
                         outlined
                         dense
                         v-model="endHour"
-                        
+                        :error-messages="endHourErrorMsg"
+                        @click="endHourErrorMsg = ''"
                         persistent-hint
                         :items="hours">
                     </v-select>
@@ -142,6 +143,8 @@
                         :disabled="!timed"
                         outlined
                         dense
+                        :error-messages="endAMPMErrorMsg"
+                        @click="endAMPMErrorMsg = ''"
                         v-model="endAMPM"
                         :items="['AM', 'PM']">
                     </v-select>
@@ -194,9 +197,11 @@ export default {
         startAMPM: "AM",
 
         endHour: [],
+        endHourErrorMsg: "",
         endMin: "",
         endMinErrorMsg: "",
         endAMPM: "AM",
+        endAMPMErrorMsg: "",
         hours: [1,2,3,4,5,6,7,8,9,10,11,12],
 
         eventRules: [
@@ -212,8 +217,10 @@ export default {
                 return "0"+ hour.toString()
             } else if(ampm == "PM" && hour < 12){
                 return (hour+12).toString()
+            }else{
+               return hour.toString()
             }
-            return hour
+             
         },
         modifyMin(min){
             if(parseInt(min) < 10){
@@ -222,6 +229,12 @@ export default {
             return min
         },
         saveNewEvent() {
+            if (this.startMin.length == 0) {
+                this.startMin = "0"
+            }
+            if (this.endMin.length == 0) {
+                this.endMin = "0"
+            }
             var flag = false
             if(this.eventName.length === 0) {
                 this.nameErrorMsg = "Name is required"
@@ -247,11 +260,25 @@ export default {
         validateTime() {
             if (isNaN(this.startMin) ||
                 parseInt(this.startMin) < 0 || parseInt(this.startMin) > 59) {
-                this.startMinErrorMsg = "Invalid time"
+                this.startMinErrorMsg = "Invalid"
             }
             if (isNaN(this.endMin) ||
                 parseInt(this.endMin) < 0 || parseInt(this.endMin) > 59) {
-                this.endMinErrorMsg = "Invalid time"
+                this.endMinErrorMsg = "Invalid"
+            }
+            if (this.startAMPM === "PM" && this.endAMPM === "AM") {
+                this.endAMPMErrorMsg = "Invalid"
+            }
+            else if (this.startAMPM === this.endAMPM) {
+                let startHr = this.startHour == "12" ? 0 : parseInt(this.startHour)
+                let endHr = this.endHour == "12" ? 0 : parseInt(this.endHour)
+                if (startHr > endHr) {
+                    this.endHourErrorMsg = "Invalid"
+                }
+                else if (startHr == endHr && 
+                    parseInt(this.startMin) >= parseInt(this.endMin)) {
+                    this.endMinErrorMsg = "Invalid"
+                }
             }
         },
         cancelNewEvent() {
@@ -259,8 +286,6 @@ export default {
             this.date = undefined
             this.eventName = ""
             this.description = ""
-            this.nameErrorMsg = ""
-            this.dateErrorMsg = ""
             this.timed = true
             this.startHour = [],
             this.startMin = "",
@@ -268,6 +293,13 @@ export default {
             this.endHour = [],
             this.endMin = "",
             this.endAMPM = "AM"
+            //Reset error messages
+            this.nameErrorMsg = ""
+            this.dateErrorMsg = ""
+            this.startMinErrorMsg = ""
+            this.endHourErrorMsg = ""
+            this.endMinErrorMsg = ""
+            this.endAMPMErrorMsg = ""
         }
     }
 };
