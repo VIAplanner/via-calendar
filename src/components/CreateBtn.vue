@@ -208,7 +208,10 @@ export default {
                 return "0"+ hour.toString()
             } else if(ampm == "PM" && hour < 12){
                 return (hour+12).toString()
+            }else{
+               return hour.toString()
             }
+             
         },
         modifyMin(min){
             if(parseInt(min) < 10){
