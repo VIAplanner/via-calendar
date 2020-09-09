@@ -222,12 +222,12 @@ export default {
             }
              
         },
-        modifyMin(min){
-            if(parseInt(min) < 10){
-                return "0"+ min
-            } 
-            return min
-        },
+        // modifyMin(min){
+        //     if(parseInt(min) < 10){
+        //         return "0"+ min
+        //     } 
+        //     return min
+        // },
         saveNewEvent() {
             if (this.startMin.length == 0) {
                 this.startMin = "0"
@@ -248,12 +248,11 @@ export default {
             if (!flag) {
                 this.addEvent({
                     name: this.eventName,
-                    start: new Date(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.modifyMin(this.startMin)+":00Z"),
-                    end: new Date(this.date+"T"+this.modifyHour(this.endHour,this.endAMPM)+":"+this.modifyMin(this.endMin)+":00Z"),
+                    start: new Date(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.startMin+":00"),
+                    end: new Date(this.date+"T"+this.modifyHour(this.endHour,this.endAMPM)+":"+this.endMin+":00"),
                     color: "blue",
                     timed: this.timed
                 })
-                console.log(this.date+"T"+this.modifyHour(this.startHour,this.startAMPM)+":"+this.modifyMin(this.startMin)+":00Z")
                 this.dialog = false
             }
         },
