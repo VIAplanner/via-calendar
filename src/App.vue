@@ -63,23 +63,23 @@
             >
               <v-card color="grey lighten-4" min-width="350px" flat>
                 <v-toolbar :color="selectedEvent.color" dark>
-                  <v-btn icon>
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
                   <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-btn icon>
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                  <v-btn @click="deleteEvent(selectedEvent.uuid), selectedOpen = false" icon>
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
-                  <v-btn icon>
+                  <!-- <v-btn icon>
                     <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
+                  </v-btn>-->
                 </v-toolbar>
                 <v-card-text>
                   <span v-html="selectedEvent.details"></span>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn text color="secondary" @click="selectedOpen = false">Cancel</v-btn>
+                  <v-btn text color="secondary" @click="selectedOpen = false" style = "margin-left: 280px">Cancel</v-btn>
                 </v-card-actions>
               </v-card>
             </v-menu>
@@ -92,7 +92,7 @@
 
 <script>
 import CreateBtn from "./components/CreateBtn";
-import { mapMutations, mapGetters } from "vuex";
+import { mapMutations, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "App",
@@ -141,6 +141,7 @@ export default {
 
   methods: {
     ...mapMutations(["addEvent"]),
+    ...mapActions(["deleteEvent"]),
     viewDay({ date }) {
       this.focus = date;
       this.type = "day";
