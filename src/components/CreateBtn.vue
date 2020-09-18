@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-toolbar dense color="#012B5C" dark>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
         <v-toolbar-title>New event</v-toolbar-title>
       </v-toolbar>
 
@@ -210,6 +210,7 @@ export default {
         flag = true;
       }
       if (!flag) {
+        //console.log(this.startMinGen)
         if (this.timed) {
           this.addEvent({
             uuid: uuidv4(),
