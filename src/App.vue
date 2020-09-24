@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container>
-      <create-btn/>
+      <create-btn />
       <v-row class="fill-height">
         <v-col>
           <v-sheet height="64">
@@ -98,12 +98,23 @@
 <script>
 import CreateBtn from "./components/CreateBtn";
 import { mapMutations, mapGetters, mapActions } from "vuex";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "App",
   components: { CreateBtn },
 
   data: () => ({
+    dummyDate: {
+      "summary": "Go to the Bank",
+      "description": "Go to the bank and get a confirmation letter for my address.",
+      'start': {
+        'dateTime': '2020-09-28T08:00:00-07:00'
+      },
+      'end': {
+        'dateTime': '2020-09-28T09:00:00-07:00'
+      }
+    },
     dialog: false,
     focus: "",
     type: "month",
@@ -143,6 +154,7 @@ export default {
   },
   mounted() {
     this.$refs.calendar.checkChange();
+    this.parseEvent(this.dummyDate)
   },
 
   methods: {
@@ -183,6 +195,18 @@ export default {
     updateRange() {
       this.events = this.getEventList;
     },
+    parseEvent(googleEvent) {
+      let timed = (googleEvent.start.dateTime.length <= 10)? true : false
+      this.addEvent( {
+        uuid: uuidv4(),
+        details: googleEvent.description,
+        name: googleEvent.summary,
+        start: new Date(googleEvent.start.dateTime),
+        end: new Date(googleEvent.end.dateTime),
+        color: "blue",
+        timed
+      })
+    }
   },
 };
 </script>
