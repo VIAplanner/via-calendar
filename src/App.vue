@@ -9,7 +9,7 @@
           class="mr-4"
           color="blue darken-2"
           @click="login"
-          v-if="auth.isSignIn"
+          v-if="!auth.isSignIn"
           >Login</v-btn
         >
         <v-btn
@@ -137,9 +137,9 @@
 
 <script>
 import CreateBtn from "./components/CreateBtn";
-import axios from "axios";
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 export default {
   name: "App",
@@ -197,7 +197,6 @@ export default {
       access_token: "",
       email: "",
       name: "",
-      calendarList: [],
     },
   }),
   computed: {
@@ -259,38 +258,71 @@ export default {
       });
     },
     async login() {
-      const GoogleUser = await this.$gAuth.signIn();
-      this.isSignIn = this.$gAuth.isAuthorized;
-      this.access_token = GoogleUser.getAuthResponse().access_token;
+      // const GoogleUser = await this.$gAuth.signIn();
+      // this.access_token = GoogleUser.getAuthResponse().access_token;
+      let authCode = await this.$gAuth.getAuthCode();
+      this.auth.isSignIn = this.$gAuth.isAuthorized;
       // console.log(this.access_token)
-      console.log(await this.$gAuth.getAuthCode());
-      this.email = GoogleUser.getBasicProfile().getEmail();
-      this.avatarUrl = GoogleUser.getBasicProfile().getImageUrl();
-      this.name = GoogleUser.getBasicProfile().getName();
-      this.getCalendarList();
+      // console.log(await this.$gAuth.getAuthCode());
+      let response = await axios.post(
+        "https://accounts.google.com/o/oauth2/token",
+        {
+          client_id: process.env.VUE_APP_CLIENT_ID,
+          client_secret: process.env.VUE_APP_CLIENT_SECRET,
+          redirect_uri: "postmessage",
+          grant_type: "authorization_code",
+          code: authCode,
+          headers: {
+            Content_Type: "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      response = response.request.response;
+      this.auth.access_token = JSON.parse(response).access_token;
+      await this.getCalendarList();
+      // this.auth.email = GoogleUser.getBasicProfile().getEmail();
+      // this.auth.avatarUrl = GoogleUser.getBasicProfile().getImageUrl();
+      // this.auth.name = GoogleUser.getBasicProfile().getName();
     },
     async logout() {
       await this.$gAuth.signOut();
-      this.isSignIn = this.$gAuth.isAuthorized;
-      this.access_token = "";
-      this.email = "";
-      this.name = "";
-      this.avatarUrl = "https://api.adorable.io/avatars/100/abott@adorable.png";
+      this.auth.isSignIn = this.$gAuth.isAuthorized;
+      this.auth.access_token = "";
+      this.auth.email = "";
+      this.auth.name = "";
       this.calendarList = [];
+      // this.auth.avatarUrl = "https://api.adorable.io/avatars/100/abott@adorable.png";
     },
     async getCalendarList() {
       let response = await axios.get(
         "https://www.googleapis.com/calendar/v3/users/me/calendarList",
         {
           headers: {
-            Authorization: `Bearer ${this.access_token}`,
+            Authorization: `Bearer ${this.auth.access_token}`,
+          },
+        }
+      );
+
+      response = JSON.parse(response.request.response);
+      let calendarID = response.items[4].id;
+      await this.getCalendarEvents(calendarID);
+    },
+    async getCalendarEvents(calendarID) {
+      console.log(this.auth.access_token)
+      let response = await axios.get(
+        `https://www.googleapis.com/calendar/v3/calendars/${calendarID}/events`,
+        {
+          params:{
+            timeMin: "2020-09-04T08:00:00+00:00"
+          },
+          headers: {
+            Authorization: `Bearer ${this.auth.access_token}`,
           },
         }
       );
       response = response.data.items;
-      this.calendarList = response.filter((calendar) => {
-        return calendar.summary !== "General Events";
-      });
+      console.log(response);
     },
   },
 };
